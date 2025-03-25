@@ -78,7 +78,7 @@
         .project {
             background: rgba(17, 17, 17, 0.7);
             padding: 20px;
-            border-radius: 10px;
+            border-radius: 5px; /* More square corners */
             box-shadow: 
                 0 0 10px rgba(255, 0, 0, 0.5),  /* Red glow */
                 inset 0 0 15px rgba(255, 0, 0, 0.3),  /* Inner red glow */
@@ -87,6 +87,10 @@
             cursor: none;
             position: relative;
             overflow: hidden;
+            aspect-ratio: 1 / 1; /* Make projects more square */
+            display: flex;
+            align-items: center;
+            justify-content: center;
         }
         .project::before {
             content: '';
@@ -116,7 +120,9 @@
             margin: 0;
             text-shadow: 0 0 10px rgba(255, 0, 0, 0.5);
         }
-        /* Rest of the previous styles */
+        #background-music {
+            display: none;
+        }
     </style>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 </head>
@@ -149,10 +155,48 @@
         </div>
     </div>
 
+    <div id="background-music"></div>
+
+    <script src="https://www.youtube.com/iframe_api"></script>
     <script>
-        // Entire previous script remains the same as in the last version
+        let player;
+
+        function onYouTubeIframeAPIReady() {
+            player = new YT.Player('background-music', {
+                width: '0',
+                height: '0',
+                videoId: 'Uq7kyf1T_lk',
+                playerVars: {
+                    'autoplay': 1,
+                    'loop': 1,
+                    'playlist': 'Uq7kyf1T_lk',
+                    'controls': 0,
+                    'disablekb': 1,
+                    'fs': 0,
+                    'iv_load_policy': 3,
+                    'modestbranding': 1,
+                    'rel': 0,
+                    'showinfo': 0
+                },
+                events: {
+                    'onReady': onPlayerReady,
+                    'onError': onPlayerError
+                }
+            });
+        }
+
+        function onPlayerReady(event) {
+            event.target.setVolume(50);
+            event.target.playVideo();
+        }
+
+        function onPlayerError(event) {
+            console.error('YouTube Player Error:', event);
+        }
+
         document.addEventListener('DOMContentLoaded', () => {
             const customCursor = document.getElementById('custom-cursor');
+            const volumeControl = document.getElementById('volume');
             
             if (!customCursor) {
                 console.error('Cursor element not found');
@@ -182,11 +226,16 @@
             };
 
             document.addEventListener('mousemove', handleMouseMove);
-        });
 
-        // Rest of the YouTube and volume control scripts remain the same
+            // Volume control
+            if (volumeControl) {
+                volumeControl.addEventListener('input', function() {
+                    if (player) {
+                        player.setVolume(this.value);
+                    }
+                });
+            }
+        });
     </script>
-    <div id="background-music"></div>
-    <script src="https://www.youtube.com/iframe_api"></script>
 </body>
 </html>
